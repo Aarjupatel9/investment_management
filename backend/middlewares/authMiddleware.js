@@ -5,7 +5,7 @@ module.exports = (authorizedRoles) => {
     return async (req, res, next) => {
         const token = req.cookies.token;
 
-        console.log(token);
+        // console.log(token);
 
         if (!token) {
             return res
@@ -31,7 +31,7 @@ module.exports = (authorizedRoles) => {
                 }
 
                 req.user = user;
-                console.log("authorized successed");
+                // console.log("authorized successed");
                 next();
             } catch (error) {
                 console.log(error);

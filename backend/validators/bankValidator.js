@@ -19,5 +19,4 @@ exports.bankDetailsvalidator = Joi.object({
         })
     ),
     uploadPassbook: Joi.string().allow(""),
-    _id: Joi.string().allow(""),
 });

@@ -5,8 +5,10 @@ import Sidebar from './Sidebar'
 import TmpCpm from '../common/TmpCpm'
 import { EditUserProfile } from './EditUserProfile'
 import { UserProfile } from './UserProfile'
-import BankAccount from './BankAccount';
-import Fd from './Fd';
+import EditBankAccount from './EditBankAccount';
+import BankAccounts from "./BankAccounts";
+import EditFd from './EditFd';
+import Fd from './Fd'
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 import "../css/Home.css";
 import Lic from './Lic'
@@ -29,8 +31,15 @@ export default function Home() {
 
                             <Route path="/" element={<TmpCpm />} />
                             <Route path="/profile" element={<UserProfile />} />
-                            <Route path="/bankaccount" element={<BankAccount />} />
+
+                            <Route path="/bankaccount" element={<BankAccounts />} />
+                            <Route path="/AddBankAccount" element={<EditBankAccount />} />
+                            <Route path="/editBankAccount/:id" element={<EditBankAccount />} />
+
                             <Route path="/fd" element={<Fd />} />
+                            <Route path="/AddFd" element={<EditFd />} />
+                            <Route path="/editFd/:id" element={<EditFd />} />
+
                             <Route path="/mutualFunds" element={<MutualFunds />} />
             
                             <Route path="/stocks" element={<Stocks />} />

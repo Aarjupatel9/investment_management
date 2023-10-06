@@ -3,6 +3,7 @@ import AppContext from '../context/AppContext';
 import "../css/login.css";
 import authService from '../services/authService';
 import { defaultUserProfileImage } from '../services/constans';
+import toast from 'react-hot-toast';
 
 export function Login() {
 
@@ -36,22 +37,13 @@ export function Login() {
   }
   function handleLogin() {
 
-    // if (email == "") {
-    //   alert("email is required");
-    //   return;
-    // }
-    // if (password.length < 6) {
-    //   alert("password have to minimum 6 char");
-    //   return;
-    // }
-
     var cred = {
       email: email,
       password: password,
     }
     authService.login(cred).then((response) => {
       console.log("login  || response : ", response);
-      alert(response.message);
+      toast.success(response.message);
 
       var tmp = {
         id: response.user._id,
@@ -74,7 +66,7 @@ export function Login() {
 
     }).catch((err) => {
       console.log("login  || err : ", err);
-      alert(err.message);
+      toast.error(err.message);
     })
 
 

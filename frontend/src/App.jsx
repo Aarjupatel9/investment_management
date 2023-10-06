@@ -27,9 +27,12 @@ function App() {
   useEffect(() => {
 
     const localUserDetail = authService.getCurrentUser();
-    setUserDetail(localUserDetail);
-    setRoll(localUserDetail.roll);
-  }, []);
+    if(localUserDetail.roll){
+      setUserDetail(localUserDetail);
+      setRoll(localUserDetail.roll);
+    
+    }
+    }, []);
 
   return (<>
   

@@ -8,6 +8,8 @@ require("dotenv").config();
 const authRoute = require('./routes/authRoute');
 const userRoute = require('./routes/userRoute');
 const profileRoute = require('./routes/profileRoute');
+const systemRoute = require('./routes/systemRoute');
+const fdRoutes = require('./routes/fdRoute');
 
 const app = express();
 app.use((req, res, next) => {
@@ -67,6 +69,9 @@ app.get('/', (req, res) => {
 app.use("/api/auth", authRoute);
 app.use("/api/user", userRoute);
 app.use("/api/profile",profileRoute);
+app.use("/api/system",systemRoute);
+app.use("/api/fd",fdRoutes);
+
 
 
 app.get('*', (req, res) => {

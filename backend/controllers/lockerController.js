@@ -1,35 +1,35 @@
-const FdAccountModel = require("../models/fdModel");
-const { fdEditValidator } = require("../validators/fdValidator");
+const LockerModel = require("../models/lockerModel");
+const { lockerValidator } = require("../validators/lockerValidator");
 
-exports.GetFdDetail = async (req, res) => {
+exports.GetLockerDetail = async (req, res) => {
   const { id } = req.params;
-  console.log("id : ",id)
+  console.log("id : ",req.params.id)
   try {
-    const user = await FdAccountModel.findById(id);
+    const user = await LockerModel.findById(id);
     if (!user) {
       return res.status(404).json({  success: false, message: "User not found." });
     }
-    res.status(200).json({ success: true, Fd: user });
+    res.status(200).json({ success: true, Locker: user });
   } catch (error) {
     console.log(error);
     res.status(500).json({  success: false, message: "Internal Server Error." });
   }
 };
-exports.GetFdDetails = async (req, res) => {
+exports.GetLockerDetails = async (req, res) => {
   const { _id } = req.user;
 
   try {
-    const user = await FdAccountModel.find({ userId: _id });
+    const user = await LockerModel.find({ userId: _id });
     // console.log("id : ", _id, " , ",user)
-    res.status(200).json({ success: true, Fds: user });
+    res.status(200).json({ success: true, Lockers: user });
   } catch (error) {
     console.log(error);
     res.status(500).json({  success: false, message: "Internal Server Error." });
   }
 };
 
-exports.AddFdAccount = async (req, res) => {
-  const { error } = fdEditValidator.validate(req.body);
+exports.AddLockerDetail = async (req, res) => {
+  const { error } = lockerValidator.validate(req.body);
   if (error) {
     return res
       .status(400)
@@ -38,22 +38,22 @@ exports.AddFdAccount = async (req, res) => {
   const { _id } = req.user;
   const achievementData = req.body;
   try {
-    const bank = await FdAccountModel({
+    const bank = await LockerModel({
       userId: _id,
       ...achievementData,
     });
     await bank.save();
     res
       .status(200)
-      .json({ success: true, fd: bank, message: "FD Details added" });
+      .json({ success: true, fd: bank, message: "locker Details added" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ success: false,  message: "Internal Server Error." });
   }
 };
 
-exports.EditFdAccount = async (req, res) => {
-  const { error } = fdEditValidator.validate(req.body);
+exports.EditLockerDetail = async (req, res) => {
+  const { error } = lockerValidator.validate(req.body);
   if (error) {
     return res
       .status(400)
@@ -63,7 +63,7 @@ exports.EditFdAccount = async (req, res) => {
   const achievementId = req.params.id;
   const achievementData = req.body;
   try {
-    const achievement = await FdAccountModel.findOneAndUpdate(
+    const achievement = await LockerModel.findOneAndUpdate(
       { _id: achievementId, userId: _id },
       achievementData,
       { new: true }
@@ -72,14 +72,14 @@ exports.EditFdAccount = async (req, res) => {
     if (!achievement) {
       return res
         .status(200)
-        .json({ success: false, message: "FD Details not found." });
+        .json({ success: false, message: "locker Details not found." });
     }
     res
       .status(200)
       .json({
         success: true,
         fd: achievement,
-        message: "FD Details updated successfully.",
+        message: "locker Details updated successfully.",
       });
   } catch (error) {
     console.log(error);
@@ -87,12 +87,12 @@ exports.EditFdAccount = async (req, res) => {
   }
 };
 
-exports.DeleteFdAccount = async (req, res) => {
+exports.DeleteLockerAccount = async (req, res) => {
   const { _id } = req.user;
   const achievementId = req.params.id;
   console.log(achievementId, "  ", _id);
   try {
-    const achievement = await FdAccountModel.findOneAndDelete({
+    const achievement = await LockerModel.findOneAndDelete({
       _id: achievementId,
       userId: _id,
     });
@@ -100,11 +100,11 @@ exports.DeleteFdAccount = async (req, res) => {
     if (!achievement) {
       return res
         .status(404)
-        .json({ success: false, message: "Bank account not found." });
+        .json({ success: false, message: "Locker not found." });
     }
     res
       .status(200)
-      .json({ success: true, message: "Bank account deleted successfully." });
+      .json({ success: true, message: "Locker deleted successfully." });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal Server Error." });

@@ -4,7 +4,7 @@ import { fdDetailsvalidator } from "../validator/Validator";
 import fdService from "../services/fdService";
 import authService from "../services/authService";
 import { useParams } from "react-router-dom";
-
+import { formatDateToDdMmYyyy } from "../utils/functions";
 const fdData = {
   idNo: "",
   bankName: "",
@@ -82,30 +82,6 @@ const EditFd = () => {
       return;
     }
 
-    // const profileUpdatePromise = fdService.updatefdDetails(data);
-    // profileUpdatePromise.then((res) => {});
-    // toast.promise(
-    //   profileUpdatePromise,
-    //   {
-    //     loading: "please wait while we updating your profile",
-    //     success: (data) => data.message,
-    //     error: (err) => err,
-    //   },
-    //   {
-    //     style: {
-    //       minWidth: "250px",
-    //     },
-    //     success: {
-    //       duration: 5000,
-    //       icon: "🔥",
-    //     },
-    //     error: {
-    //       duration: 5000,
-    //       icon: "🔥",
-    //     },
-    //   }
-    // );
-
     if (id) {
       const qualificationPromise = fdService.updatefdDetails(_id, data);
       toast.promise(
@@ -120,11 +96,11 @@ const EditFd = () => {
             minWidth: "250px",
           },
           success: {
-            duration: 5000,
+            duration: 2000,
             icon: "🔥",
           },
           error: {
-            duration: 5000,
+            duration: 2000,
             icon: "🔥",
           },
         }
@@ -148,11 +124,11 @@ const EditFd = () => {
             minWidth: "250px",
           },
           success: {
-            duration: 5000,
+            duration: 2000,
             icon: "🔥",
           },
           error: {
-            duration: 5000,
+            duration: 2000,
             icon: "🔥",
           },
         }
@@ -165,21 +141,26 @@ const EditFd = () => {
     }
   };
   useEffect(() => {
-
     if (id != undefined) {
       fdService
-        .getUserfdDetail(authService.getCurrentUserId())
+        .getUserfdDetail(id)
         .then((res) => {
-          const userProfile = res.bank;
+          const userProfile = res.Fd;
           console.log("userProfile : ", userProfile);
           if (userProfile) {
             userProfile.nominee = userProfile.nominee.map((item) => {
               const { _id, ...rest } = item;
               return rest;
             });
-            delete userProfile.__v;
+            userProfile.document = userProfile.document.map((item) => {
+              const { _id, ...rest } = item;
+              return rest;
+            });
+            userProfile.matuiryDate = formatDateToDdMmYyyy(
+              String(userProfile.matuiryDate)
+            );
             setfdDetails(userProfile);
-            setReports(userProfile.documents);
+            setReports(userProfile.document);
           }
         })
         .catch((error) => {
@@ -530,7 +511,7 @@ const EditFd = () => {
                       target="_blank"
                       href={report.url}
                     >
-                      Passbook
+                      {index+1} ) Documents
                     </a>
                     <button
                       onClick={() => handleRemoveReport(index)}

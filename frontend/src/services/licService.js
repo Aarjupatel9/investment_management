@@ -2,7 +2,7 @@ import AuthService from "./authService";
 import { handleRejectResponse } from "./systemService";
 
 class UserService {
-  getUserfdDetail(_id) {
+  getUserLicDetail(_id) {
     return new Promise(function (resolve, reject) {
       const options = {
         method: "POST",
@@ -16,7 +16,7 @@ class UserService {
         body: JSON.stringify({ _id: _id }),
       };
       fetch(
-        process.env.REACT_APP_API_SERVER + "/api/fd/getfdDetail/" + _id,
+        process.env.REACT_APP_API_SERVER + "/api/lic/getLicDetail/" + _id,
         options
       )
         .then((response) => {
@@ -38,7 +38,7 @@ class UserService {
         });
     });
   }
-  getUserfdDetails() {
+  getUserLicDetails() {
     console.log("start");
     return new Promise(function (resolve, reject) {
       const options = {
@@ -53,7 +53,10 @@ class UserService {
       };
       console.log("aftere option");
 
-      fetch(process.env.REACT_APP_API_SERVER + "/api/fd/getfdDetails", options)
+      fetch(
+        process.env.REACT_APP_API_SERVER + "/api/lic/getLicDetails",
+        options
+      )
         .then((response) => {
           console.log("fetch then response :", response);
           return response.json();
@@ -75,7 +78,7 @@ class UserService {
       console.log("aftere end");
     });
   }
-  AddfdDetails(data) {
+  AddLicDetails(data) {
     return new Promise(function (resolve, reject) {
       const options = {
         method: "POST",
@@ -88,7 +91,7 @@ class UserService {
         },
         body: JSON.stringify(data),
       };
-      fetch(process.env.REACT_APP_API_SERVER + "/api/fd/AddFdDetail", options)
+      fetch(process.env.REACT_APP_API_SERVER + "/api/lic/AddLicDetail", options)
         .then((response) => {
           console.log("fetch then response :", response);
           return response.json();
@@ -108,7 +111,7 @@ class UserService {
         });
     });
   }
-  updatefdDetails(id, data) {
+  updateLicDetails(id, data) {
     return new Promise(function (resolve, reject) {
       const options = {
         method: "POST",
@@ -122,7 +125,7 @@ class UserService {
         body: JSON.stringify(data),
       };
       fetch(
-        process.env.REACT_APP_API_SERVER + "/api/fd/updatefdDetail/" + id,
+        process.env.REACT_APP_API_SERVER + "/api/lic/updateLicDetail/" + id,
         options
       )
         .then((response) => {
@@ -145,7 +148,7 @@ class UserService {
     });
   }
 
-  deleteFdDetail(_id) {
+  deleteLicDetail(_id) {
     return new Promise(function (resolve, reject) {
       const options = {
         method: "POST",
@@ -160,7 +163,7 @@ class UserService {
       };
 
       fetch(
-        process.env.REACT_APP_API_SERVER + "/api/fd/deleteFdDetail/" + _id,
+        process.env.REACT_APP_API_SERVER + "/api/lic/deleteLicDetail/" + _id,
         options
       )
         .then((response) => {

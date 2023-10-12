@@ -5,34 +5,36 @@ const fdSchema = mongoose.Schema({
     ref: "users",
     index: true,
   },
-  idNo: {
+  product: {
     type: String,
     required: true,
   },
-  bankName: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  name: {
-    type: String,
-    required: true,
-  },
-
-  depositeAccount: {
-    type: String,
-    required: true,
-  },
-  year: {
+  unitPrice: {
     type: Number,
     required: true,
   },
-  matuiryDate: {
-    type: Date,
+  QuantityInHand: {
+    type: Number,
+    required: true,
+  },
+  QuantitySold: {
+    type: Number,
+    required: true,
+  },
+  inventoryValue: {
+    type: String,
+    required: true,
+  },
+  salesValue: {
+    type: String,
+    required: true,
+  },
+  availabelStokes: {
+    type: Number,
+    required: true,
+  },
+  status: {
+    type: Number,
     required: true,
   },
   nominee: [
@@ -56,7 +58,6 @@ const fdSchema = mongoose.Schema({
     },
   ],
 });
-
-const fdmodel = mongoose.model("fdDetails", fdSchema);
+const fdmodel = mongoose.model("stokes", fdSchema);
 
 module.exports = fdmodel;

@@ -21,7 +21,7 @@ router
   .post(authenticateRoles([ROLES.HEAD, ROLES.STD_USER]), EditFdAccount);
 
 router
-  .route("/deleteFdDetails/:id")
+  .route("/deleteFdDetail/:id")
   .post(authenticateRoles([ROLES.HEAD, ROLES.STD_USER]), DeleteFdAccount);
 
 module.exports = router;

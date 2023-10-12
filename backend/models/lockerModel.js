@@ -5,34 +5,28 @@ const fdSchema = mongoose.Schema({
     ref: "users",
     index: true,
   },
-  idNo: {
+  branchName: {
     type: String,
     required: true,
   },
-  bankName: {
+  accountNumber: {
     type: String,
     required: true,
   },
-  email: {
-    type: String,
-    required: true,
-    index: true,
-  },
-  name: {
+  lockerHolder: {
     type: String,
     required: true,
   },
-
-  depositeAccount: {
-    type: String,
-    required: true,
-  },
-  year: {
+  lockerSize: {
     type: Number,
     required: true,
   },
-  matuiryDate: {
-    type: Date,
+  lockerNumber: {
+    type: String,
+    required: true,
+  },
+  IFSCCode: {
+    type: String,
     required: true,
   },
   nominee: [
@@ -56,7 +50,6 @@ const fdSchema = mongoose.Schema({
     },
   ],
 });
-
-const fdmodel = mongoose.model("fdDetails", fdSchema);
+const fdmodel = mongoose.model("lockers", fdSchema);
 
 module.exports = fdmodel;

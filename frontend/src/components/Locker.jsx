@@ -1,297 +1,272 @@
-import React, { useEffect, useState } from 'react';
-import toast, { Toaster } from 'react-hot-toast';
-import userService from '../services/userService';
-import authService from '../services/authService';
+import React, { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import lockerService from "../services/lockerService";
+import { Link, useNavigate } from "react-router-dom";
 
-const locker = {
-
-    phoneNumber: "",
-    branchName: "",
-    accountNumber: "",
-    IFSC: "",
-    lockersize: "",
-    lockernumber: "",
-    lockerholder: "",
-    nominee: [
-
-    ],
-
-    _id: "",
-};
-
+import { formatDateToDdMmYyyy } from "../utils/functions";
 
 const Locker = () => {
-    const [lockerDetails, setlockerDetails] = useState(locker);
-    const [pageno, setpageno] = useState(0);
-    const [rowData, setRowData] = useState({ nominee: { name: "", share: "" } });
+  const [searchInput, setSearchInput] = useState("");
+  const [lockerDetails, setLockerDetails] = useState([]);
+  const navigate = useNavigate();
 
-    const handleRowDataInputChange = (event) => {
-        const { name, value } = event.target;
-        if (name.startsWith("nominee.")) {
-            const [parent, child] = name.split(".");
-            setRowData((prevData) => ({
-                ...prevData,
-                nominee: {
-                    ...prevData.nominee,
-                    [child]: value,
-                },
-            }));
-        }
-    }
-
-    const handleAddnominee = () => {
-        const nominee = rowData.nominee;
-        const sum = lockerDetails.nominee.reduce((total, nominee) => {
-            return total + parseInt(nominee.share);
-        }, parseInt(nominee.share));
-        console.log(sum);
-        if (parseInt(sum) > 100) {
-            toast.error("Share can't be more than 100%");
-            return;
-        }
-
-
-
-        if (nominee.name.trim() !== '') {
-            setlockerDetails((prevData) => ({
-                ...prevData,
-                nominee: [...prevData.nominee, { name: nominee.name, share: nominee.share }],
-            }));
-            setRowData((prevData) => ({
-                ...prevData,
-                nominee: { name: "", share: "" },
-            }));
-        }
-    };
-
-    const handleRemovenominee = (index) => {
-        const updatedExperts = [...lockerDetails.nominee];
-        updatedExperts.splice(index, 1);
-        setlockerDetails((prevData) => ({
-            ...prevData,
-            nominee: updatedExperts,
-        }));
-    };
-    useEffect(() => { console.log("pageno=", pageno) }, [pageno])
-
-    const handelProfileUpload = () => {
-        console.log('Form Data:', lockerDetails); // You can process the data as needed
-        // const { error } = bankDetailsvalidator.validate(lockerDetails);
-        // if (error) {
-        //     toast.error(error.toString());
-        //     return;
-        // }
-        const profileUpdatePromise = userService.updateBankDetail(lockerDetails);
-        profileUpdatePromise.then((res) => {
-
-        })
-        toast.promise(
-            profileUpdatePromise,
-            {
-                loading: 'please wait while we updating your profile',
-                success: (data) => data.message,
-                error: (err) => err,
-            },
-            {
-                style: {
-                    minWidth: '250px',
-                },
-                success: {
-                    duration: 5000,
-                    icon: '🔥',
-                },
-                error: {
-                    duration: 5000,
-                    icon: '🔥',
-                },
-            }
-        );
-    };
-
-    useEffect(() => {
-
-        setlockerDetails((data) => ({
-            ...data,
-            _id: authService.getCurrentUserId()
-        }));
-        userService.getBankDetail(authService.getCurrentUserId()).then((res) => {
-
-            const userProfile = res.bank;
-            console.log("userProfile : ", userProfile);
-            if (userProfile) {
-                userProfile.nominee = userProfile.nominee.map(item => {
-                    // Create a copy of the object without the '_id' field
-                    const { _id, ...rest } = item;
-                    // Return the modified object
-                    return rest;
-
-                });
-                delete userProfile.__v;
-                setlockerDetails(userProfile);
-            }
-        }).catch((error) => {
-            console.log("error : ", error);
-        })
-    }, []);
-    const handleInputChange = (event) => {
-        const { name, value } = event.target;
-        console.log("enter in handle input change");
-        // If the input is nested within personalDetails or bankDetails, update accordingly
-        if (name.startsWith("nominee.")) {
-            const [parent, child] = name.split(".");
-            setlockerDetails((prevData) => ({
-                ...prevData,
-                nominee: {
-                    ...prevData.nominee,
-                    [child]: value,
-                },
-            }));
-        }
-        else {
-            console.log("handleInputChange else change : ", name)
-            setlockerDetails((prevData) => ({
-                ...prevData,
-                [name]: value,
-            }));
-        }
-    };
-
-    const incrementpageno = () => {
-        if (pageno < 1) {
-            setpageno(pageno + 1);
-
-        }
-    }
-    const deacrementpgeno = () => {
-        if (pageno > 0) {
-            setpageno(pageno - 1);
-        }
-    }
-    return (
-        <>
-            <div className="mt-7 myscroll">
-
-                <div>
-                    <h3 className="mb-4 text-lg font-medium leading-none text-gray-900 dark:text-white  ml-96" >Locker Details</h3>
-
-                    <div className="grid gap-4 mb-4 sm:grid-cols-2 ml-2">
-                        <div>
-                            <label htmlFor="branchName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">BranchName</label>
-                            <input type="text" onChange={handleInputChange} name="branchName" id="branchName" className="bg-gray-50  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="BranchName" required="" />
-                        </div>
-                        <div>
-                            <label htmlFor="accountNumber" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">AccountNumber</label>
-                            <input type="text" onChange={handleInputChange} name="accountNumber" id="accountNumber" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="AccountNumber" required="" />
-                        </div>
-                    </div>
-
-
-                    <div className="grid gap-4 mb-4 sm:grid-cols-2 ml-2">
-                        <div>
-                            <label htmlFor="IFSC" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">IFSCode</label>
-                            <input type="text" onChange={handleInputChange} name="IFSC" id="IFSC" className="bg-gray-50  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="IFSCode" required="" />
-                        </div>
-                        <div>
-                            <label htmlFor="lockerholder" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">LockerHolderName</label>
-                            <input type="text" onChange={handleInputChange} name="lockerholder" id="lockerholder" className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="LockerHolder_Name" required="" />
-                        </div>
-                    </div>
-
-
-                    <div className="grid gap-4 mb-4 sm:grid-cols-2 ml-2">
-                        <div>
-                            <label htmlFor="lockernumber" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">LockerNumber</label>
-                            <input typetype="text" onChange={handleInputChange} name="lockernumber" id="lockernumber" className="bg-gray-50  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="lockernumber" required="" />
-                        </div>
-                        <div>
-                        <label htmlFor="lockersize" className="block mb-2 text-sm font-medium text-gray-900 dark:text-white">LockerSize</label>
-                        <input type="text" onChange={handleInputChange} name="lockersize" id="lockersize" class="bg-gray-50  border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-600 focus:border-blue-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Lockersize" required="" />
-                     </div><br/>
-                    </div>
-                </div>
-                <div className='block'>
-                    <div className='flex flex-col'>
-                        <h3 className='mt-4 mx-auto  text-xl font-medium text-gray-900 dark:text-white'>nominees</h3>
-                        <hr className='w-48 h-1 mx-auto bg-gray-300 border-0 rounded md:mt-2 md:mb-4 dark:bg-gray-700' />
-                        <div className='my-6 mx-10 mb-4 px-10 w-full'>
-                            <div className="flex flex-row  items-center justify-between  ">
-                                <div className="flex flex-col w-full px-10 ">
-                                    <div className="relative z-0 w-full mb-6 group">
-                                        <input
-                                            onChange={handleRowDataInputChange}
-                                            value={rowData.nominee.name}
-                                            type="text"
-                                            name="nominee.name"
-                                            id="nominee.name"
-                                            className="block py-2.5 px-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                             placeholder="Name"
-                                        />
-                                    </div>
-                                    <div className=" z-0 w-full mb-6 group">
-                                        <input
-                                            onChange={handleRowDataInputChange}
-                                            value={rowData.nominee.share}
-
-                                            type="text"
-                                            name="nominee.share"
-                                            id="nominee.share"
-                                            className="block  p-0 w-full text-sm text-gray-900 bg-transparent border-0 border-b-2 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
-                                            placeholder="Share"
-                                        />
-                                    </div>
-                                </div>
-
-                                <button
-                                    onClick={handleAddnominee}
-                                    className=" right-2 h-10 p-2 rounded-lg focus:bg-gray-300 text-blue-700 dark:text-blue-500 hover:text-blue-900 dark:hover:text-blue-700 focus:outline-none"
-                                > Add </button>
-                            </div>
-                            <div className='w-full flex flex-col '>
-                                {lockerDetails.nominee.map((nominee, index) => (
-                                    <div key={index} className="text-sm text-gray-900 dark:text-white">
-                                        {index + 1}) name : {nominee.name}  share : {nominee.share}%
-                                        <button
-                                            onClick={() => handleRemovenominee(index)}
-                                            className="ml-2 text-red-700 dark:text-red-500 hover:text-red-900 dark:hover:text-red-700 focus:outline-none"
-                                        >
-                                            Remove
-                                        </button>
-                                    </div>
-                                ))}
-                            </div><br/>
-                            <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-900 dark:text-white" htmlFor="file_input">Upload PassBook</label>
-                        <input className="block w-full text-sm text-gray-900 border border-gray-300 rounded-lg cursor-pointer bg-gray-50 dark:text-gray-400 focus:outline-none dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400" id="file_input" type="file" />
-                    </div>
-                        </div>
-                    </div>
-                </div>
-                <br />
-
-
-
-            </div>
-            <br />
-            <div class="flex items-center justify-center">
-
-                {/* <a onClick={deacrementpgeno} className=" px-3 h-8 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Previous
-                </a> */}
-
-                {/* <a onClick={incrementpageno} className=" px-3 h-8 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Next
-                </a> */}
-
-                <a onClick={handelProfileUpload} className=" px-3 h-8 ml-3 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white">
-                    Save
-                </a>
-            </div>
-
-
-
-        </>
-
+  useEffect(() => {
+    const fdPromise = lockerService.getUserLockerDetails();
+    toast.promise(
+      fdPromise,
+      {
+        loading: "fetching Locker details",
+        success: "",
+        error: (err) => err,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 1,
+          icon: "🔥",
+        },
+        error: {
+          duration: 2000,
+          icon: "🔥",
+        },
+      }
     );
+    fdPromise
+      .then((res) => {
+        setLockerDetails(res.Lockers);
+      })
+      .catch((error) => {
+        console.log("error : ", error);
+      });
+  }, []);
+
+  const handelEventDelete = (_id) => {
+    const eventPromise = lockerService.deleteLockerDetail(_id);
+    eventPromise
+      .then((res) => {
+        console.log("users : ", res);
+        const tmp = lockerDetails.filter((qualification) => {
+          if (qualification._id != _id) {
+            return qualification;
+          }
+        });
+        setLockerDetails(tmp);
+      })
+      .catch((error) => {
+        console.log("error : ", error);
+      });
+
+    toast.promise(
+      eventPromise,
+      {
+        loading: "please wait while we deleting Locker Details",
+        success: (data) => data.message,
+        error: (err) => err,
+      },
+      {
+        style: {
+          minWidth: "250px",
+        },
+        success: {
+          duration: 3000,
+          icon: "🔥",
+        },
+        error: {
+          duration: 4000,
+          icon: "🔥",
+        },
+      }
+    );
+  };
+
+  return (
+    <div className="">
+      <nav className="bg-gray-300 border-gray-200 dark:bg-gray-900">
+        <div className="flex  flex-wrap items-center justify-between mx-auto px-3 py-1">
+          <div
+            className="flex items-center justify-between  w-full md:flex md:w-auto md:order-0"
+            id="navbar-language"
+          >
+            <div className="mx-3">
+              <Link
+                to={"/AddLocker"}
+                className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
+                aria-current="page"
+              >
+                Add Locker Details
+              </Link>
+            </div>
+          </div>
+          <div className="flex md:order-2">
+            <button
+              type="button"
+              data-collapse-toggle="navbar-search"
+              aria-controls="navbar-search"
+              aria-expanded="false"
+              className="md:hidden text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-4 focus:ring-gray-200 dark:focus:ring-gray-700 rounded-lg text-sm p-2.5 mr-1"
+            >
+              <svg
+                className="w-5 h-5"
+                aria-hidden="true"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  stroke="currentColor"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth="2"
+                  d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                />
+              </svg>
+              <span className="sr-only">Search</span>
+            </button>
+            <div className="relative hidden md:block">
+              <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-papers-none">
+                <svg
+                  className="w-4 h-4 text-gray-500 dark:text-gray-400"
+                  aria-hidden="true"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    stroke="currentColor"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"
+                  />
+                </svg>
+                <span className="sr-only">Search icon</span>
+              </div>
+              <input
+                type="text"
+                id="search-navbar"
+                className="block w-full p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                placeholder="Search..."
+              />
+            </div>
+          </div>
+        </div>
+      </nav>
+      {lockerDetails.length > 0 ? (
+        <div className="flex flex-col pt-4 ">
+          <h1 className="mx-auto  text-2xl font-medium text-gray-900 dark:text-white">
+            Locker Details
+          </h1>
+          <div className="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
+            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+              <thead className="text-xs text-gray-700 uppercase  dark:text-gray-400">
+                <tr className="mb-2 border-b border-gray-200 dark:border-gray-600">
+                  <th
+                    scope="col"
+                    className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
+                  >
+                    lockerNumber
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 dark:text-white dark:bg-gray-700"
+                  >
+                    accountNumber
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
+                  >
+                    lockerSize
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 dark:text-white dark:bg-gray-700"
+                  >
+                    lockerHolder
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
+                  >
+                    IFSCCode
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 dark:text-white dark:bg-gray-700"
+                  >
+                    <span className="sr-only">Edit</span>
+                  </th>
+                  <th
+                    scope="col"
+                    className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
+                  >
+                    <span className="sr-only">Delete</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="">
+                {lockerDetails.map((qualification) => {
+                  return (
+                    <tr
+                      key={qualification._id}
+                      className="border-b border-gray-200 dark:border-gray-600"
+                    >
+                      <th
+                        scope="row"
+                        className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
+                      >
+                        {qualification.lockerNumber}
+                      </th>
+                      <td className="px-6 py-4 dark:text-white dark:bg-gray-700">
+                        {qualification.accountNumber}
+                      </td>
+                      <td className="px-6 py-4 bg-gray-100 dark:bg-gray-800">
+                        {qualification.lockerSize} Inch.
+                      </td>
+                      <td className="px-6 py-4 dark:text-white dark:bg-gray-700">
+                        {qualification.lockerHolder}
+                      </td>
+                      <td className="px-6 py-4 bg-gray-100 dark:bg-gray-800">
+                        {qualification.IFSCCode}
+                      </td>
+                      <td className="px-6 py-4 text-right dark:text-white dark:bg-gray-700">
+                        <div
+                          onClick={() => {
+                            navigate("/editLocker/" + qualification._id);
+                          }}
+                          className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
+                        >
+                          Edit
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 text-right dark:text-white bg-gray-100 dark:bg-gray-800">
+                        <div
+                          onClick={() => {
+                            handelEventDelete(qualification._id);
+                          }}
+                          className="font-medium text-red-600 dark:text-red-500 hover:underline"
+                        >
+                          Delete
+                        </div>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ) : (
+        <div className="flex flex-col pt-4">
+          <h1 className="mx-auto  text-2xl font-bold text-gray-900 dark:text-white">
+            There is not any Locker Details
+          </h1>
+        </div>
+      )}
+    </div>
+  );
 };
 
 export default Locker;

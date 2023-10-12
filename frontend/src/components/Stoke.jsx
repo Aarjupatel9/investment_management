@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
+import stokeService from "../services/stokeService";
 import { Link, useNavigate } from "react-router-dom";
-import toast from "react-hot-toast";
-import fdService from "../services/fdService";
+
 import { formatDateToDdMmYyyy } from "../utils/functions";
-const Fd = () => {
+
+const Stoke = () => {
   const [searchInput, setSearchInput] = useState("");
-  const [fdDetails, setFdDetails] = useState([]);
+  const [stokeDetails, setStokeDetails] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("fd start");
-
-    const fdPromise = fdService.getUserfdDetails();
+    const fdPromise = stokeService.getUserStokeDetails();
     toast.promise(
       fdPromise,
       {
-        loading: "fetching FD details",
+        loading: "fetching Stoke details",
         success: "",
         error: (err) => err,
       },
@@ -35,7 +35,7 @@ const Fd = () => {
     );
     fdPromise
       .then((res) => {
-        setFdDetails(res.Fds);
+        setStokeDetails(res.Stokes);
       })
       .catch((error) => {
         console.log("error : ", error);
@@ -43,16 +43,16 @@ const Fd = () => {
   }, []);
 
   const handelEventDelete = (_id) => {
-    const eventPromise = fdService.deleteFdDetail(_id);
+    const eventPromise = stokeService.deleteStokeDetail(_id);
     eventPromise
       .then((res) => {
         console.log("users : ", res);
-        const tmp = fdDetails.filter((qualification) => {
+        const tmp = stokeDetails.filter((qualification) => {
           if (qualification._id != _id) {
             return qualification;
           }
         });
-        setFdDetails(tmp);
+        setStokeDetails(tmp);
       })
       .catch((error) => {
         console.log("error : ", error);
@@ -61,7 +61,7 @@ const Fd = () => {
     toast.promise(
       eventPromise,
       {
-        loading: "please wait while we deleting qualification",
+        loading: "please wait while we deleting Stoke Details",
         success: (data) => data.message,
         error: (err) => err,
       },
@@ -80,6 +80,7 @@ const Fd = () => {
       }
     );
   };
+
   return (
     <div className="">
       <nav className="bg-gray-300 border-gray-200 dark:bg-gray-900">
@@ -90,11 +91,11 @@ const Fd = () => {
           >
             <div className="mx-3">
               <Link
-                to={"/AddFd"}
+                to={"/AddStoke"}
                 className="block py-2 pl-3 pr-4 text-white bg-blue-700 rounded md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
                 aria-current="page"
               >
-                Add FD Account
+                Add Stoke Details
               </Link>
             </div>
           </div>
@@ -152,10 +153,10 @@ const Fd = () => {
           </div>
         </div>
       </nav>
-      {fdDetails.length > 0 ? (
+      {stokeDetails.length > 0 ? (
         <div className="flex flex-col pt-4 ">
           <h1 className="mx-auto  text-2xl font-medium text-gray-900 dark:text-white">
-            FD Details
+            Stoke Details
           </h1>
           <div className="mt-4 relative overflow-x-auto shadow-md sm:rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
@@ -165,31 +166,31 @@ const Fd = () => {
                     scope="col"
                     className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
                   >
-                    Bank Name
+                    product
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 dark:text-white dark:bg-gray-700"
                   >
-                    ID No.
+                    unitPrice
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
                   >
-                    Name
+                    QuantityInHand
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 dark:text-white dark:bg-gray-700"
                   >
-                    deposite Account (in Rs.)
+                    salesValue
                   </th>
                   <th
                     scope="col"
                     className="px-6 py-3 bg-gray-100 dark:bg-gray-800"
                   >
-                    Maturity date
+                    availabelStokes
                   </th>
                   <th
                     scope="col"
@@ -206,7 +207,7 @@ const Fd = () => {
                 </tr>
               </thead>
               <tbody className="">
-                {fdDetails.map((qualification) => {
+                {stokeDetails.map((qualification) => {
                   return (
                     <tr
                       key={qualification._id}
@@ -216,24 +217,24 @@ const Fd = () => {
                         scope="row"
                         className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap bg-gray-50 dark:text-white dark:bg-gray-800"
                       >
-                        {qualification.bankName}
+                        {qualification.product}
                       </th>
                       <td className="px-6 py-4 dark:text-white dark:bg-gray-700">
-                        {qualification.idNo}
+                        {qualification.unitPrice}
                       </td>
                       <td className="px-6 py-4 bg-gray-100 dark:bg-gray-800">
-                        {qualification.name}
+                        {qualification.QuantityInHand} Inch.
                       </td>
                       <td className="px-6 py-4 dark:text-white dark:bg-gray-700">
-                        {qualification.depositeAccount}
+                        {qualification.salesValue}
                       </td>
                       <td className="px-6 py-4 bg-gray-100 dark:bg-gray-800">
-                        {formatDateToDdMmYyyy((qualification.matuiryDate))} 
+                        {qualification.availabelStokes}
                       </td>
                       <td className="px-6 py-4 text-right dark:text-white dark:bg-gray-700">
                         <div
                           onClick={() => {
-                            navigate("/editFd/" + qualification._id);
+                            navigate("/editStoke/" + qualification._id);
                           }}
                           className="font-medium text-blue-600 dark:text-blue-500 hover:underline"
                         >
@@ -260,7 +261,7 @@ const Fd = () => {
       ) : (
         <div className="flex flex-col pt-4">
           <h1 className="mx-auto  text-2xl font-bold text-gray-900 dark:text-white">
-            There is no Fixed deposite Details
+            There is not any Stoke Details
           </h1>
         </div>
       )}
@@ -268,4 +269,4 @@ const Fd = () => {
   );
 };
 
-export default Fd;
+export default Stoke;

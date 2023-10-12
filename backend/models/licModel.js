@@ -5,33 +5,61 @@ const fdSchema = mongoose.Schema({
     ref: "users",
     index: true,
   },
-  idNo: {
+  policyNumber: {
     type: String,
     required: true,
   },
-  bankName: {
+  income: {
+    type: Number,
+    required: true,
+  },
+  agentCode: {
     type: String,
     required: true,
   },
-  email: {
+  agentName: {
     type: String,
     required: true,
     index: true,
   },
-  name: {
+  planName: {
     type: String,
     required: true,
   },
-
-  depositeAccount: {
+  planNumber: {
     type: String,
     required: true,
   },
-  year: {
+  term: {
+    type: String,
+    required: true,
+  },
+  planTerm: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  premiumDate: {
+    type: Date,
+    required: true,
+  },
+  lastDate: {
+    type: Date,
+    required: true,
+  },
+  sumAssured: {
     type: Number,
     required: true,
   },
-  matuiryDate: {
+  insuranceAmmount: {
+    type: Number,
+    required: true,
+  },
+
+  maturityDate: {
     type: Date,
     required: true,
   },
@@ -57,6 +85,6 @@ const fdSchema = mongoose.Schema({
   ],
 });
 
-const fdmodel = mongoose.model("fdDetails", fdSchema);
+const fdmodel = mongoose.model("lics", fdSchema);
 
 module.exports = fdmodel;

@@ -32,7 +32,7 @@ const fdSchema = mongoose.Schema({
     required: true,
   },
   matuiryDate: {
-    type: Date,
+    type: String,
     required: true,
   },
   nominee: [
@@ -57,6 +57,6 @@ const fdSchema = mongoose.Schema({
   ],
 });
 
-const fdmodel = mongoose.model("fdDetails", fdSchema);
+const fdmodel = mongoose.model("mutualfunds", fdSchema);
 
 module.exports = fdmodel;
